@@ -96,3 +96,31 @@ This repository provides all source diffs and configuration files needed to audi
    cd src
    git checkout tags/<target-chromium-version>
    gclient sync
+   
+1. **Apply Arnium Modifications:**
+   ```cmd
+   git apply path\to\arnium_modifications.patch
+
+   gn gen out\Release
+2.copy /Y path\to\args.gn out\Release\args.gn
+
+3.ninja -C out\Release chrome
+
+Package the Installer:
+Open arnium_installer.iss inside Inno Setup Compiler, verify that your source path points to the out\Release directory, and compile the script to produce ArniumSetup.exe.
+
+⚖️ Legal & Disclaimers
+Dolby Laboratories: Dolby, Dolby Atmos, and Dolby Vision are registered trademarks of Dolby Laboratories Licensing Corporation. Arnium does not bundle, reverse-engineer, or redistribute proprietary Dolby decoders or binaries; media playback relies solely on host Windows Media Foundation endpoints, system-level audio configurations, and user-acquired Microsoft Store extensions.
+
+Microsoft Corporation: Windows, Windows Media Foundation, and PlayReady are registered trademarks of Microsoft Corporation.
+
+Chromium: Chromium is a registered trademark of Google LLC. This project is an independent open-source fork and is not affiliated with, endorsed by, or sponsored by Google LLC.
+
+📄 License
+Arnium Browser is released under the BSD 3-Clause License. See the LICENSE file for complete details.
+
+
+6. Paste it right at the end of the file.
+7. Click the green **Commit changes...** button at the top right, keep **Commit directly to the `main` branch** selected, and click **Commit changes**.
+
+<FollowUp label="Want to verify that everything looks formatted correctly?" query="How do I check if my README rendered properly on GitHub?"/>
