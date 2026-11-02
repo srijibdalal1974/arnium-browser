@@ -89,31 +89,6 @@ This repository provides all source diffs and configuration files needed to audi
 
 ### Build Steps
 
-
-## 📁 Repository Structure
-
-This repository provides all source diffs and configuration files needed to audit, modify, and build Arnium independently:
-
-- **`arnium_modifications.patch`**: Complete C++ unified patch containing all UI modifications, removed enterprise nag screens, custom toolbar button injection, and profile view adjustments.
-- **`args.gn`**: Production GN compilation configuration specifying proprietary codec inclusion, platform decoder flags, and release optimizations.
-- **`arnium_installer.iss`**: Inno Setup script that packages the compiled binary tree into a standalone, non-administrative per-user installer (`ArniumSetup.exe`).
-- **`chrome.ico`**: High-resolution application icon used for branding and installer packaging.
-- **`LICENSE`**: BSD 3-Clause Open Source License agreement.
-
----
-
-## 🛠️ How to Build from Source
-
-### Prerequisites
-- Windows 10 or 11 (x64)
-- Visual Studio 2022 (Community or higher) with:
-  * Desktop development with C++
-  * Windows 10/11 SDK (version 10.0.22621.0 or newer)
-- [Google Depot Tools](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html) added to system `PATH`
-- [Inno Setup 7](https://jrsoftware.org/isinfo.php) (for creating the setup executable)
-
-### Build Steps
-
 1. **Obtain Chromium Source:**
    ```cmd
    mkdir chromium && cd chromium
