@@ -119,8 +119,3 @@ Chromium: Chromium is a registered trademark of Google LLC. This project is an i
 📄 License
 Arnium Browser is released under the BSD 3-Clause License. See the LICENSE file for complete details.
 
-
-6. Paste it right at the end of the file.
-7. Click the green **Commit changes...** button at the top right, keep **Commit directly to the `main` branch** selected, and click **Commit changes**.
-
-<FollowUp label="Want to verify that everything looks formatted correctly?" query="How do I check if my README rendered properly on GitHub?"/>
