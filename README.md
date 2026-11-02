@@ -89,13 +89,7 @@ This repository provides all source diffs and configuration files needed to audi
 
 ### Build Steps
 
-1. **Obtain Chromium Source:**
-   ```cmd
-   mkdir chromium && cd chromium
-   fetch --nohooks chromium
-   cd src
-   git checkout tags/<target-chromium-version>
-   gclient sync
+
 ## 📁 Repository Structure
 
 This repository provides all source diffs and configuration files needed to audit, modify, and build Arnium independently:
