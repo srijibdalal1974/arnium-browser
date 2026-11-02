@@ -1,0 +1,37 @@
+is_debug = false
+dcheck_always_on = false
+proprietary_codecs = true
+ffmpeg_branding = "Chrome"
+
+# Enable platform HEVC and Dolby Vision parsing
+enable_platform_hevc = true
+enable_platform_dolby_vision = true
+enable_hevc_parser_and_hw_decoder = true
+enable_platform_encrypted_dolby_vision = true
+
+# Enable platform MediaFoundation audio (for E-AC-3 / Atmos passthrough)
+enable_platform_ac3_eac3_audio = true
+enable_platform_dts_audio = false
+
+# DRM / Key systems
+enable_widevine = true
+enable_playready = true
+
+bundle_widevine_cdm = true
+enable_library_cdms = true
+
+symbol_level = 0
+is_component_build = true
+
+chrome_product_name = "Arnium"
+enable_gdoc_integration = false
+# Optional: customize branding flags if using custom branding templates
+
+google_api_key = "dummy_arnium_api_key_000000000000"
+google_default_client_id = "dummy_client_id_0000000000.apps.googleusercontent.com"
+google_default_client_secret = "dummy_secret_0000000000"
+
+# Disable Google account sync and proprietary Gaia endpoints
+enable_google_now = false
+win_linker_timing = false
+dx_sdk_path = ""
