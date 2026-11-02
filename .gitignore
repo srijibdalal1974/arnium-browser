@@ -1,0 +1,37 @@
+# Compiled binaries & build outputs
+out/
+build/
+*.exe
+*.dll
+*.obj
+*.lib
+*.pdb
+*.exp
+*.ilk
+
+# Ninja and GN build system artifacts
+.ninja_*
+ninja.log
+args.gn.backup
+
+# Inno Setup output
+Output/
+_ISMSGF.TMP
+
+# Visual Studio & IDE files
+.vs/
+*.sln
+*.vcxproj*
+*.user
+.vscode/
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Temporary and log files
+*.log
+*.tmp
+*.bak
