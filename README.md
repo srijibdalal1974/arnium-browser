@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.png" alt="Arnium Browser Logo" width="180">
+  <img src="chrome.ico" alt="Arnium Browser Logo" width="128">
 </p>
 
 # Arnium Browser
