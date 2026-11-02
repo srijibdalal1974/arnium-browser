@@ -4,6 +4,16 @@
 
 # Arnium Browser
 
+<p align="center">
+  <a href="https://github.com/srijibdalal1974/arnium-browser/releases/latest">
+    <img src="https://img.shields.io/github/v/release/srijibdalal1974/arnium-browser?color=0078D4&label=Release&logo=github" alt="Latest Release">
+  </a>
+  <img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-blue?logo=windows&logoColor=white" alt="Platform: Windows 10 | 11">
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg" alt="License: BSD 3-Clause">
+  </a>
+</p>
+
 > A lightweight, user-first Chromium fork focused on high-fidelity media pipelines, decluttered UI ergonomics, and unmanaged local profile privacy.
 
 Arnium is built for users who want the web compatibility and rendering speed of Chromium without corporate overhead, telemetry pop-ups, forced cloud synchronization, and artificial platform-codec restrictions.
@@ -59,26 +69,30 @@ We encourage you to try your favorite streaming platforms (Netflix, Prime Video,
 
 This repository provides all source diffs and configuration files needed to audit, modify, and build Arnium independently:
 
-* **`arnium_modifications.patch`**: Complete C++ unified patch containing all UI modifications, removed enterprise nag screens, custom toolbar button injection, and profile view adjustments.
-* **`args.gn`**: Production GN compilation configuration specifying proprietary codec inclusion, platform decoder flags, and release optimizations.
-* **`arnium_installer.iss`**: Inno Setup script that packages the compiled binary tree into a standalone, non-administrative per-user installer (`ArniumSetup.exe`).
+- **`arnium_modifications.patch`**: Complete C++ unified patch containing all UI modifications, removed enterprise nag screens, custom toolbar button injection, and profile view adjustments.
+- **`args.gn`**: Production GN compilation configuration specifying proprietary codec inclusion, platform decoder flags, and release optimizations.
+- **`arnium_installer.iss`**: Inno Setup script that packages the compiled binary tree into a standalone, non-administrative per-user installer (`ArniumSetup.exe`).
+- **`chrome.ico`**: High-resolution application icon used for branding and installer packaging.
+- **`LICENSE`**: BSD 3-Clause Open Source License agreement.
 
 ---
 
 ## 🛠️ How to Build from Source
 
 ### Prerequisites
-* Windows 10 or 11 (x64)
-* Visual Studio 2022 (Community or higher) with:
+- Windows 10 or 11 (x64)
+- Visual Studio 2022 (Community or higher) with:
   * Desktop development with C++
   * Windows 10/11 SDK (version 10.0.22621.0 or newer)
-* [Google Depot Tools](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html) added to system `PATH`
-* [Inno Setup 7](https://jrsoftware.org/isinfo.php) (for creating the setup executable)
+- [Google Depot Tools](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html) added to system `PATH`
+- [Inno Setup 7](https://jrsoftware.org/isinfo.php) (for creating the setup executable)
 
 ### Build Steps
 
 1. **Obtain Chromium Source:**
    ```cmd
    mkdir chromium && cd chromium
-   fetch --no-history chromium
-   cd srcD
+   fetch --nohooks chromium
+   cd src
+   git checkout tags/<target-chromium-version>
+   gclient sync
