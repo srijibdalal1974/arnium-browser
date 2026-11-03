@@ -104,7 +104,7 @@ This repository provides all source diffs and configuration files needed to audi
    gn gen out\Release
 2.copy /Y path\to\args.gn out\Release\args.gn
 
-3.ninja -C out\Release chrome
+3.autoninja -C out\Release chrome
 
 Package the Installer:
 Open arnium_installer.iss inside Inno Setup Compiler, verify that your source path points to the out\Release directory, and compile the script to produce ArniumSetup.exe.
