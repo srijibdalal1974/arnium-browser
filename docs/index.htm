@@ -1,0 +1,231 @@
+@'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arnium Browser v2 | High-Performance Media Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090c10;
+      --card-bg: rgba(22, 27, 34, 0.7);
+      --border: rgba(255, 255, 255, 0.1);
+      --accent-cyan: #00e5ff;
+      --accent-green: #00ff88;
+      --text-muted: #8b949e;
+      --text: #f0f6fc;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    .radial-glow {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(0, 229, 255, 0.12) 0%, rgba(9, 12, 16, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: var(--accent-cyan); }
+    .badge {
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      margin-left: 0.5rem;
+    }
+    .hero {
+      max-width: 920px;
+      margin: 4rem auto 3rem;
+      text-align: center;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 10;
+    }
+    .hero h1 {
+      font-size: 3.5rem;
+      line-height: 1.15;
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -1.5px;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #ffffff 40%, var(--accent-cyan) 80%, var(--accent-green) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 0.85rem 1.8rem;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: inline-block;
+    }
+    .btn-primary {
+      background: var(--accent-cyan);
+      color: #090c10;
+      box-shadow: 0 0 25px rgba(0, 229, 255, 0.35);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px rgba(0, 229, 255, 0.55);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .terminal-box {
+      max-width: 820px;
+      margin: 3rem auto;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .terminal-header {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 1rem;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f56; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #27c93f; }
+    .line { margin-bottom: 0.4rem; }
+    .c-green { color: var(--accent-green); }
+    .c-cyan { color: var(--accent-cyan); }
+    .c-dim { color: #8b949e; }
+    .features {
+      max-width: 1100px;
+      margin: 5rem auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      padding: 0 1.5rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+    }
+    .card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+      color: #fff;
+    }
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="radial-glow"></div>
+  <nav>
+    <div class="logo">ARNIUM <span>v2</span><span class="badge">CHROMIUM 122</span></div>
+    <a href="https://github.com" class="btn btn-secondary">Source Code</a>
+  </nav>
+
+  <section class="hero">
+    <h1>Custom Chromium for <span class="gradient-text">Hardware Media Streaming</span></h1>
+    <p>Engineered with hardware-secure PlayReady SL3000, native Dolby Vision Profiles 5 & 8 decoding, and D3D11on12 zero-copy presentation swapchains.</p>
+    <div class="btn-group">
+      <a href="#download" class="btn btn-primary">Download v2.0 Release</a>
+      <a href="#features" class="btn btn-secondary">Technical Architecture</a>
+    </div>
+  </section>
+
+  <div class="terminal-box">
+    <div class="terminal-header">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+    </div>
+    <div class="line c-cyan">> ARNIUM_MEDIA_SUBSYSTEM: AUDIT_PIPELINE</div>
+    <div class="line c-green">[GRANTED] PlayReady Hardware Secure SL3000 (PAVP/TEE Active)</div>
+    <div class="line c-green">[GRANTED] Robustness: HW_SECURE_ALL & 3000</div>
+    <div class="line c-green">[PASS] Dolby Vision Profile 5 (dvhe.05.06) -> Hardware MFT Smooth</div>
+    <div class="line c-green">[PASS] Dolby Audio (E-AC-3 / Atmos) -> Spatial Sound Passthrough</div>
+    <div class="line c-dim">> HDCP Handshake: 2.2 / 2.3 link verified usable</div>
+  </div>
+
+  <section class="features" id="features">
+    <div class="card">
+      <h3>PlayReady SL3000 Hardware DRM</h3>
+      <p>Decryption occurs strictly inside hardware-isolated GPU memory (Intel PAVP / ME), satisfying 4K streaming licensing requirements.</p>
+    </div>
+    <div class="card">
+      <h3>Dolby Vision Profiles 5 & 8</h3>
+      <p>Routes bitstreams directly to platform Media Foundation Transforms (MFT) for smooth hardware decoding and native tonemapping.</p>
+    </div>
+    <div class="card">
+      <h3>DirectComposition Presentation</h3>
+      <p>Eliminates frame copy penalties with D3D11on12 desktop window composition, rendering 4K 60fps media with zero dropped frames.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Arnium Browser v2 • Custom Chromium Architecture</p>
+  </footer>
+</body>
+</html>
+'@ | Out-File -FilePath "D:\arnium-browser-site\docs\index.html" -Encoding utf8
