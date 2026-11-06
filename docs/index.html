@@ -1,0 +1,276 @@
+@'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arnium Browser v2 | Hardware-Accelerated Media Engine</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #06080e;
+      --surface: rgba(13, 17, 28, 0.72);
+      --border: rgba(0, 229, 255, 0.18);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --accent-cyan: #00e5ff;
+      --accent-purple: #9d4edd;
+      --accent-green: #00ff88;
+      --text: #f0f6fc;
+      --text-dim: #8b9bb4;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    .bg-canvas {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .hero-watermark {
+      position: absolute;
+      top: -5%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 780px;
+      height: 780px;
+      background: url('logo.png') no-repeat center center;
+      background-size: contain;
+      opacity: 0.16;
+      filter: blur(14px) drop-shadow(0 0 80px rgba(0, 229, 255, 0.45));
+      animation: floatPulse 9s ease-in-out infinite alternate;
+    }
+    @keyframes floatPulse {
+      0% { transform: translateX(-50%) translateY(0) scale(1); filter: blur(14px) drop-shadow(0 0 50px rgba(0, 229, 255, 0.3)); }
+      100% { transform: translateX(-50%) translateY(-25px) scale(1.06); filter: blur(10px) drop-shadow(0 0 90px rgba(157, 78, 221, 0.5)); }
+    }
+    nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.8rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      text-decoration: none;
+      color: #fff;
+    }
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: url('logo.png') no-repeat center center;
+      background-size: cover;
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+    }
+    .nav-title { font-size: 1.35rem; font-weight: 700; }
+    .nav-title span { color: var(--accent-cyan); }
+    .nav-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 99px;
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+    .hero {
+      max-width: 960px;
+      margin: 4.5rem auto 2.5rem;
+      text-align: center;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 10;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      background: rgba(13, 17, 28, 0.85);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.85rem;
+      color: var(--accent-cyan);
+      margin-bottom: 2rem;
+      backdrop-filter: blur(12px);
+    }
+    .hero-badge span {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+    }
+    .hero h1 {
+      font-size: 3.8rem;
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing: -2px;
+      margin-bottom: 1.5rem;
+    }
+    .glow-text {
+      background: linear-gradient(135deg, #ffffff 30%, var(--accent-cyan) 75%, var(--accent-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-dim);
+      max-width: 720px;
+      margin: 0 auto 2.5rem;
+    }
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 0.95rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .btn-download {
+      background: var(--accent-cyan);
+      color: #06080e;
+      box-shadow: 0 0 30px rgba(0, 229, 255, 0.4);
+    }
+    .btn-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 45px rgba(0, 229, 255, 0.7);
+    }
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      backdrop-filter: blur(10px);
+    }
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .hud-box {
+      max-width: 860px;
+      margin: 3.5rem auto;
+      background: rgba(10, 14, 22, 0.9);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(0, 229, 255, 0.15);
+      position: relative;
+      z-index: 10;
+    }
+    .hud-line { margin-bottom: 0.45rem; }
+    .c-green { color: var(--accent-green); }
+    .c-cyan { color: var(--accent-cyan); }
+    .c-dim { color: var(--text-dim); }
+    .features-section {
+      max-width: 1200px;
+      margin: 6rem auto 3rem;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 10;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.8rem;
+    }
+    .glass-card {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 2.2rem;
+      backdrop-filter: blur(14px);
+      transition: all 0.3s ease;
+    }
+    .glass-card:hover {
+      border-color: var(--border);
+      transform: translateY(-5px);
+    }
+    .glass-card h3 { font-size: 1.3rem; margin-bottom: 0.8rem; color: #fff; }
+    .glass-card p { color: var(--text-dim); font-size: 0.98rem; }
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 3rem 2rem;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.92rem;
+      position: relative;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-canvas">
+    <div class="hero-watermark"></div>
+  </div>
+  <nav>
+    <a href="#" class="nav-brand">
+      <div class="brand-icon"></div>
+      <div class="nav-title">ARNIUM <span>v2</span></div>
+      <div class="nav-tag">PLAYREADY SL3000</div>
+    </a>
+    <a href="https://github.com/srijibdalal1974/arnium-browser" class="btn btn-outline" target="_blank">GitHub Repo</a>
+  </nav>
+  <section class="hero">
+    <div class="hero-badge">
+      <span></span> Hardware Media Engine Active
+    </div>
+    <h1>The Custom Chromium Engine for <span class="glow-text">Cinematic Streaming</span></h1>
+    <p>Hardware PlayReady SL3000 TEE enclaves, native Dolby Vision Profiles 5 & 8 decoding, and zero-copy DirectComposition swapchains.</p>
+    <div class="hero-buttons">
+      <a href="https://github.com/srijibdalal1974/arnium-browser/releases/latest" class="btn btn-download" target="_blank">Download v2.0 Release</a>
+      <a href="https://github.com/srijibdalal1974/arnium-browser" class="btn btn-outline" target="_blank">View Source</a>
+    </div>
+  </section>
+  <div class="hud-box">
+    <div class="hud-line c-cyan">> RUNNING EME & HARDWARE TRANSFORM AUDIT...</div>
+    <div class="hud-line c-green">[GRANTED] PlayReady Hardware Secure (HW_SECURE_ALL) -> Active</div>
+    <div class="hud-line c-green">[GRANTED] Robustness Level 3000 (SL3000 / TEE) -> 4K Stream Cap Unlocked</div>
+    <div class="hud-line c-green">[PASS] Dolby Vision Profiles 5 & 8 (dvhe.05.06 / dvhe.08.06) -> Hardware MFT Smooth</div>
+    <div class="hud-line c-green">[PASS] Dolby Audio (E-AC-3 / Atmos) -> Active 3000 Robustness Routing</div>
+    <div class="hud-line c-dim">> HDCP Handshake: Levels 1.0, 2.0, 2.2, 2.3 verified usable across eDP pipeline</div>
+  </div>
+  <section class="features-section">
+    <div class="grid">
+      <div class="glass-card">
+        <h3>PlayReady SL3000 TEE Enclave</h3>
+        <p>Decryption occurs strictly inside hardware-isolated GPU memory (PAVP/TEE). Netflix, Prime Video, and Apple TV recognize native SL3000 security, unlocking full 4K streams.</p>
+      </div>
+      <div class="glass-card">
+        <h3>Dolby Vision Profiles 5 & 8</h3>
+        <p>Directly connects to Windows MFT decoders, handling dynamic metadata and BT.2020 PQ tonemapping with zero stutter.</p>
+      </div>
+      <div class="glass-card">
+        <h3>Dolby Atmos (E-AC-3) Passthrough</h3>
+        <p>Integrated spatial sound architecture streaming discrete multi-channel E-AC-3 bitstreams without software downmixing.</p>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <p>Arnium Browser v2 • Custom Chromium Architecture • Maintained by srijibdalal1974</p>
+  </footer>
+</body>
+</html>
+'@ | Out-File -FilePath "D:\arnium-browser-site\docs\index.html" -Encoding utf8
