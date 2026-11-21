@@ -53,6 +53,8 @@ Arnium enables advanced hardware media decoding paths directly within Chromium's
 | **PlayReady SL3000** | ✅ Fully Supported | 🌟 **Definitely Try It!** (Platform dependent) | Intel 7th Gen+ / AMD equivalent with HDCP 2.2. Arnium exposes the needed hardware paths! |
 | **AV1 / HEVC (H.265)** | ✅ Hardware Accelerated | ✅ Hardware Accelerated | Hardware GPU decoder + Windows HEVC Video Extensions. |
 
+##May Vary on your own hardware
+
 ---
 
 ### You Should Definitely Try Streaming on OTT Services!
