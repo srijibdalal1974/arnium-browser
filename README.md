@@ -55,6 +55,10 @@ Arnium enables advanced hardware media decoding paths directly within Chromium's
 
 ##May Vary on your own hardware
 
+
+<a href="[https://srijibdalal1974.github.io/arnium-browser/](https://srijibdalal1974.github.io/arnium-browser/)">Download Arnium</a>
+
+
 ---
 
 ### You Should Definitely Try Streaming on OTT Services!
