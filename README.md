@@ -5,12 +5,12 @@
 # Arnium Browser
 
 <p align="center">
-  <a href="https://github.com/srijibdalal1974/arnium-browser/releases/latest">
-    <img src="https://img.shields.io/github/v/release/srijibdalal1974/arnium-browser?color=0078D4&label=Release&logo=github" alt="Latest Release">
+  <a href="[https://github.com/srijibdalal1974/arnium-browser/releases/latest](https://github.com/srijibdalal1974/arnium-browser/releases/latest)">
+    <img src="[https://img.shields.io/github/v/release/srijibdalal1974/arnium-browser?color=0078D4&label=Release&logo=github](https://img.shields.io/github/v/release/srijibdalal1974/arnium-browser?color=0078D4&label=Release&logo=github)" alt="Latest Release">
   </a>
-  <img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-blue?logo=windows&logoColor=white" alt="Platform: Windows 10 | 11">
+  <img src="[https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-blue?logo=windows&logoColor=white](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-blue?logo=windows&logoColor=white)" alt="Platform: Windows 10 | 11">
   <a href="LICENSE">
-    <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg" alt="License: BSD 3-Clause">
+    <img src="[https://img.shields.io/badge/License-BSD%203--Clause-blue.svg](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)" alt="License: BSD 3-Clause">
   </a>
 </p>
 
@@ -53,11 +53,9 @@ Arnium enables advanced hardware media decoding paths directly within Chromium's
 | **PlayReady SL3000** | ✅ Fully Supported | 🌟 **Definitely Try It!** (Platform dependent) | Intel 7th Gen+ / AMD equivalent with HDCP 2.2. Arnium exposes the needed hardware paths! |
 | **AV1 / HEVC (H.265)** | ✅ Hardware Accelerated | ✅ Hardware Accelerated | Hardware GPU decoder + Windows HEVC Video Extensions. |
 
- ##May Vary on your own hardware
+## May Vary on your own hardware
 
-
-<a href="[https://srijibdalal1974.github.io/arnium-browser/](https://srijibdalal1974.github.io/arnium-browser/)">Download Arnium</a>
-
+[Download Arnium](https://srijibdalal1974.github.io/arnium-browser/)
 
 ---
 
@@ -88,8 +86,8 @@ This repository provides all source diffs and configuration files needed to audi
 ### Prerequisites
 - Windows 10 or 11 (x64)
 - Visual Studio 2022 (Community or higher) with:
-  * Desktop development with C++
-  * Windows 10/11 SDK (version 10.0.22621.0 or newer)
+  - Desktop development with C++
+  - Windows 10/11 SDK (version 10.0.22621.0 or newer)
 - [Google Depot Tools](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html) added to system `PATH`
 - [Inno Setup 7](https://jrsoftware.org/isinfo.php) (for creating the setup executable)
 
@@ -102,26 +100,25 @@ This repository provides all source diffs and configuration files needed to audi
    cd src
    git checkout tags/<target-chromium-version>
    gclient sync
-   
-1. **Apply Arnium Modifications:**
+   ```
+
+2. **Apply Arnium Modifications:**
    ```cmd
    git apply path\to\arnium_modifications.patch
-
    gn gen out\Release
-2.copy /Y path\to\args.gn out\Release\args.gn
+   copy /Y path\to\args.gn out\Release\args.gn
+   autoninja -C out\Release chrome
+   ```
 
-3.autoninja -C out\Release chrome
+3. **Package the Installer:**
+   Open `arnium_installer.iss` inside Inno Setup Compiler, verify that your source path points to the `out\Release` directory, and compile the script to produce `ArniumSetup.exe`.
 
-Package the Installer:
-Open arnium_installer.iss inside Inno Setup Compiler, verify that your source path points to the out\Release directory, and compile the script to produce ArniumSetup.exe.
+---
 
-⚖️ Legal & Disclaimers
-Dolby Laboratories: Dolby, Dolby Atmos, and Dolby Vision are registered trademarks of Dolby Laboratories Licensing Corporation. Arnium does not bundle, reverse-engineer, or redistribute proprietary Dolby decoders or binaries; media playback relies solely on host Windows Media Foundation endpoints, system-level audio configurations, and user-acquired Microsoft Store extensions.
+## ⚖️ Legal & Disclaimers
+- **Dolby Laboratories**: Dolby, Dolby Atmos, and Dolby Vision are registered trademarks of Dolby Laboratories Licensing Corporation. Arnium does not bundle, reverse-engineer, or redistribute proprietary Dolby decoders or binaries; media playback relies solely on host Windows Media Foundation endpoints, system-level audio configurations, and user-acquired Microsoft Store extensions.
+- **Microsoft Corporation**: Windows, Windows Media Foundation, and PlayReady are registered trademarks of Microsoft Corporation.
+- **Chromium**: Chromium is a registered trademark of Google LLC. This project is an independent open-source fork and is not affiliated with, endorsed by, or sponsored by Google LLC.
 
-Microsoft Corporation: Windows, Windows Media Foundation, and PlayReady are registered trademarks of Microsoft Corporation.
-
-Chromium: Chromium is a registered trademark of Google LLC. This project is an independent open-source fork and is not affiliated with, endorsed by, or sponsored by Google LLC.
-
-📄 License
-Arnium Browser is released under the BSD 3-Clause License. See the LICENSE file for complete details.
-
+## 📄 License
+Arnium Browser is released under the BSD 3-Clause License. See the `LICENSE` file for complete details.
