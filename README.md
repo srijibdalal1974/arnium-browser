@@ -5,12 +5,12 @@
 # Arnium Browser
 
 <p align="center">
-  <a href="[https://github.com/srijibdalal1974/arnium-browser/releases/latest](https://github.com/srijibdalal1974/arnium-browser/releases/latest)">
-    <img src="[https://img.shields.io/github/v/release/srijibdalal1974/arnium-browser?color=0078D4&label=Release&logo=github](https://img.shields.io/github/v/release/srijibdalal1974/arnium-browser?color=0078D4&label=Release&logo=github)" alt="Latest Release">
+  <a href="https://github.com/srijibdalal1974/arnium-browser/releases/latest">
+    <img src="https://img.shields.io/github/v/release/srijibdalal1974/arnium-browser?color=0078D4&label=Release&logo=github" alt="Latest Release">
   </a>
-  <img src="[https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-blue?logo=windows&logoColor=white](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-blue?logo=windows&logoColor=white)" alt="Platform: Windows 10 | 11">
+  <img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-blue?logo=windows&logoColor=white" alt="Platform: Windows 10 | 11">
   <a href="LICENSE">
-    <img src="[https://img.shields.io/badge/License-BSD%203--Clause-blue.svg](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)" alt="License: BSD 3-Clause">
+    <img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg" alt="License: BSD 3-Clause">
   </a>
 </p>
 
@@ -25,9 +25,9 @@ Arnium is built for users who want the web compatibility and rendering speed of 
 Most mainstream browsers either enforce enterprise telemetry and aggressive sign-in banners, or ship with stripped-down media backends that fail on high-resolution HDR and multi-channel surround setups. Arnium modifies Chromium at the native C++ level to deliver three core advantages:
 
 1. **Unthrottled Media Decoding Pipeline**
-   - **Direct Media Foundation Integration**: Hooks directly into native Windows Media Foundation transforms (`MFVideoFormat`, `DolbyDecMFT`) for hardware-accelerated video decoding.
-   - **Dolby Vision & Spatial Audio Ready**: Engineered to pass through and decode Dolby Vision (Profiles 5 & 8.1) and Dolby Atmos / AC-3 / E-AC-3 audio streams natively for local media files and direct streams on supported Windows hardware.
-   - **PlayReady SL3000 Support**: Retains hardware-level DRM communication endpoints required for secure hardware decoding on compatible systems.
+   - **Direct Media Foundation Integration**: Hooks directly into native Windows Media Foundation transforms (`MFVideoFormat`, `DolbyDecMFT`) for hardware-accelerated video decoding **(Tested in Shaka Player)**.
+   - **Dolby Vision & Spatial Audio Ready**: Engineered to pass through and decode Dolby Vision (Profiles 5 & 8.1) and Dolby Atmos / AC-3 / E-AC-3 audio streams natively for local media files and direct streams on supported Windows hardware **(Tested in Shaka Player)**.
+   - **PlayReady SL3000 Support**: Retains hardware-level DRM communication endpoints required for secure hardware decoding on compatible systems **(Tested in Shaka Player)**.
 
 2. **Clean, Unmanaged Interface Ergonomics**
    - **No Corporate Management Banners**: Permanently disables "Managed by your organization" warnings, enterprise enrollment nags, and fake policy alerts.
@@ -42,16 +42,16 @@ Most mainstream browsers either enforce enterprise telemetry and aggressive sign
 
 ## 🎬 Media Playback & Hardware Capabilities
 
-Arnium enables advanced hardware media decoding paths directly within Chromium's core.
+Arnium enables advanced hardware media decoding paths directly within Chromium's core **(Tested in Shaka Player)**.
 
 ### Compatibility & Recommendations
 
 | Feature | Local Files & Direct Streams | Streaming Sites (OTT Platforms) | Requirements & Recommendation |
 | :--- | :--- | :--- | :--- |
-| **Dolby Vision** | ✅ Fully Supported | 🌟 **Definitely Try It!** (Platform dependent) | Dolby Vision display + Windows Store Extensions. You should test it on your streaming services! |
-| **Dolby Atmos / AC-3** | ✅ Fully Supported | 🌟 **Definitely Try It!** (Platform dependent) | Windows Spatial Sound / Dolby Atmos active. You should test it on your multi-channel media setups! |
-| **PlayReady SL3000** | ✅ Fully Supported | 🌟 **Definitely Try It!** (Platform dependent) | Intel 7th Gen+ / AMD equivalent with HDCP 2.2. Arnium exposes the needed hardware paths! |
-| **AV1 / HEVC (H.265)** | ✅ Hardware Accelerated | ✅ Hardware Accelerated | Hardware GPU decoder + Windows HEVC Video Extensions. |
+| **Dolby Vision** | ✅ Fully Supported *(Tested in Shaka Player)* | 🌟 **Definitely Try It!** (Platform dependent; *Tested in Shaka Player*) | Dolby Vision display + Windows Store Extensions. You should test it on your streaming services! |
+| **Dolby Atmos / AC-3** | ✅ Fully Supported *(Tested in Shaka Player)* | 🌟 **Definitely Try It!** (Platform dependent; *Tested in Shaka Player*) | Windows Spatial Sound / Dolby Atmos active. You should test it on your multi-channel media setups! |
+| **PlayReady SL3000** | ✅ Fully Supported *(Tested in Shaka Player)* | 🌟 **Definitely Try It!** (Platform dependent; *Tested in Shaka Player*) | Intel 7th Gen+ / AMD equivalent with HDCP 2.2. Arnium exposes the needed hardware paths! |
+| **AV1 / HEVC (H.265)** | ✅ Hardware Accelerated *(Tested in Shaka Player)* | ✅ Hardware Accelerated *(Tested in Shaka Player)* | Hardware GPU decoder + Windows HEVC Video Extensions. |
 
 ## May Vary on your own hardware
 
@@ -61,11 +61,11 @@ Arnium enables advanced hardware media decoding paths directly within Chromium's
 
 ### You Should Definitely Try Streaming on OTT Services!
 
-We encourage you to try your favorite streaming platforms (Netflix, Prime Video, Disney+, Hotstar, etc.) in Arnium:
+We encourage you to try your favorite streaming platforms (Netflix, Prime Video, Disney+, Hotstar, etc.) in Arnium **(Tested in Shaka Player)**:
 
-- **Hardware Capabilities Built In**: Because Arnium exposes native Windows Media Foundation pipelines and hardware-level PlayReady SL3000 flags, your machine is equipped to request high-tier video and multichannel audio streams.
-- **Why You Should Give It a Shot**: While commercial streaming providers manage strict server-side whitelists for browser signatures, many users successfully get high-definition, HDR, or surround streams depending on their subscription tier, installed extensions, and system hardware.
-- **Graceful Fallback**: Even if a specific service does not negotiate its highest tier due to custom browser signatures, Arnium will seamlessly fall back to standard high-definition playback (1080p stereo / Widevine L3), so your content will always play.
+- **Hardware Capabilities Built In**: Because Arnium exposes native Windows Media Foundation pipelines and hardware-level PlayReady SL3000 flags, your machine is equipped to request high-tier video and multichannel audio streams **(Tested in Shaka Player)**.
+- **Why You Should Give It a Shot**: While commercial streaming providers manage strict server-side whitelists for browser signatures, many users successfully get high-definition, HDR, or surround streams depending on their subscription tier, installed extensions, and system hardware **(Tested in Shaka Player)**.
+- **Graceful Fallback**: Even if a specific service does not negotiate its highest tier due to custom browser signatures, Arnium will seamlessly fall back to standard high-definition playback (1080p stereo / Widevine L3), so your content will always play **(Tested in Shaka Player)**.
 
 ---
 
