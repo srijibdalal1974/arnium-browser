@@ -49,7 +49,6 @@
       line-height: 1.6;
     }
 
-    /* Scroll Progress Bar */
     .scroll-progress {
       position: fixed;
       top: 0;
@@ -62,7 +61,6 @@
       transition: width 0.1s ease-out;
     }
 
-    /* Ambient Background */
     .bg-canvas {
       position: fixed;
       inset: 0;
@@ -93,6 +91,10 @@
       opacity: 0.14;
       filter: blur(16px) drop-shadow(0 0 80px rgba(0, 229, 255, 0.45));
       animation: floatPulse 9s ease-in-out infinite alternate;
+    }
+
+    .hero-watermark.fallback-svg {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2300e5ff'/%3E%3Cstop offset='100%25' stop-color='%23a855f7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='128' cy='128' r='96' fill='none' stroke='url(%23g)' stroke-width='6'/%3E%3Cpath d='M128 42 L192 204 L158 204 L144 166 L112 166 L98 204 L64 204 Z M128 96 L118 140 L138 140 Z' fill='url(%23g)'/%3E%3Cellipse cx='128' cy='136' rx='112' ry='36' transform='rotate(-22 128 136)' fill='none' stroke='%2300e5ff' stroke-width='8'/%3E%3C/svg%3E");
     }
 
     .orb {
@@ -130,7 +132,6 @@
       100% { transform: translate(35px, -30px) scale(1.12); }
     }
 
-    /* Sticky Glass Navigation */
     header {
       position: sticky;
       top: 0;
@@ -162,9 +163,21 @@
       width: 38px;
       height: 38px;
       border-radius: 10px;
-      background: url('logo.png') no-repeat center center;
-      background-size: cover;
+      background: rgba(11, 15, 28, 0.9);
+      border: 1px solid var(--border);
       box-shadow: 0 0 18px rgba(0, 229, 255, 0.45);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .brand-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .nav-title {
@@ -205,7 +218,6 @@
       color: var(--accent-cyan);
     }
 
-    /* Hero Section */
     .hero {
       max-width: 980px;
       margin: 4.5rem auto 2.5rem;
@@ -318,7 +330,6 @@
       transform: translateY(-2px);
     }
 
-    /* Interactive Terminal HUD */
     .hud-wrapper {
       max-width: 900px;
       margin: 3.5rem auto;
@@ -418,7 +429,6 @@
     .c-red { color: var(--accent-red); }
     .c-dim { color: var(--text-dim); }
 
-    /* Section Headers */
     .section {
       max-width: 1200px;
       margin: 5.5rem auto;
@@ -454,7 +464,6 @@
       font-size: 1.05rem;
     }
 
-    /* Interactive Pipeline Explorer */
     .pipeline-tabs {
       display: flex;
       justify-content: center;
@@ -556,7 +565,6 @@
       color: var(--accent-green);
     }
 
-    /* Spotlight Glass Cards */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -623,7 +631,6 @@
       font-size: 0.96rem;
     }
 
-    /* Interactive Compatibility Matrix */
     .matrix-controls {
       display: flex;
       justify-content: center;
@@ -687,7 +694,6 @@
       border-color: rgba(0, 229, 255, 0.28);
     }
 
-    /* Build Snippet Box */
     .build-box {
       background: rgba(9, 13, 22, 0.92);
       border: 1px solid var(--border);
@@ -707,7 +713,6 @@
       line-height: 1.7;
     }
 
-    /* Footer */
     footer {
       border-top: 1px solid var(--border-subtle);
       padding: 3rem 2rem;
@@ -753,13 +758,15 @@
     <div class="bg-grid"></div>
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
-    <div class="hero-watermark"></div>
+    <div class="hero-watermark" id="heroWatermark"></div>
   </div>
 
   <header>
     <nav>
       <a href="#" class="nav-brand">
-        <div class="brand-icon"></div>
+        <div class="brand-icon" id="brandIconBox">
+          <img id="brandLogoImg" src="logo.png" alt="Arnium Browser Logo">
+        </div>
         <div class="nav-title">ARNIUM <span>v2</span></div>
         <div class="nav-tag">PLAYREADY SL3000</div>
       </a>
@@ -786,7 +793,6 @@
       </div>
     </section>
 
-    <!-- Interactive Media Diagnostic Terminal -->
     <section class="hud-wrapper" id="audit">
       <div class="hud-box">
         <div class="hud-topbar">
@@ -812,7 +818,6 @@
       </div>
     </section>
 
-    <!-- Interactive Pipeline Explorer -->
     <section class="section" id="pipeline">
       <div class="section-head">
         <span class="section-kicker">Architecture Explorer</span>
@@ -827,12 +832,9 @@
         <button type="button" class="pipe-btn" data-pipe="ui">Clean Local Profile UI</button>
       </div>
 
-      <div class="pipeline-panel" id="pipelinePanel">
-        <!-- Populated dynamically via JS -->
-      </div>
+      <div class="pipeline-panel" id="pipelinePanel"></div>
     </section>
 
-    <!-- Core Feature Cards -->
     <section class="section">
       <div class="grid" id="cardGrid">
         <div class="glass-card">
@@ -868,7 +870,6 @@
       </div>
     </section>
 
-    <!-- Interactive Compatibility Matrix -->
     <section class="section" id="matrix">
       <div class="section-head">
         <span class="section-kicker">Playback Matrix</span>
@@ -922,7 +923,6 @@
       </div>
     </section>
 
-    <!-- Quick Build Section -->
     <section class="section">
       <div class="build-box">
         <div class="build-code" id="buildCmd">git apply arnium_modifications.patch &amp;&amp; gn gen out\Release &amp;&amp; autoninja -C out\Release chrome</div>
@@ -941,6 +941,37 @@
   </footer>
 
   <script>
+    // Logo Fallback Handler (uses local/GitHub logo.png if present, or crisp SVG fallback if missing)
+    (function setupLogoFallback() {
+      const img = document.getElementById('brandLogoImg');
+      const box = document.getElementById('brandIconBox');
+      const watermark = document.getElementById('heroWatermark');
+
+      const fallbackSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="28" height="28" aria-hidden="true">
+        <defs>
+          <linearGradient id="arniumGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00e5ff"/>
+            <stop offset="100%" stop-color="#a855f7"/>
+          </linearGradient>
+        </defs>
+        <circle cx="32" cy="32" r="24" fill="none" stroke="url(#arniumGrad)" stroke-width="2.5"/>
+        <path d="M32 11 L48 50 L40 50 L36.5 41 L27.5 41 L24 50 L16 50 Z M32 23 L29.5 34 L34.5 34 Z" fill="url(#arniumGrad)"/>
+        <ellipse cx="32" cy="34" rx="28" ry="9" transform="rotate(-22 32 34)" fill="none" stroke="#00e5ff" stroke-width="2.5"/>
+      </svg>`;
+
+      function applyFallback() {
+        if (box) box.innerHTML = fallbackSvg;
+        if (watermark) watermark.classList.add('fallback-svg');
+      }
+
+      if (img) {
+        img.addEventListener('error', applyFallback, { once: true });
+        if (img.complete && img.naturalWidth === 0) {
+          applyFallback();
+        }
+      }
+    })();
+
     // Scroll Progress Bar
     window.addEventListener('scroll', () => {
       const scrollTop = document.documentElement.scrollTop;
@@ -958,7 +989,7 @@
       });
     });
 
-    // Interactive Terminal HUD (Reference vs Live Current Browser Scan)
+    // Interactive Terminal HUD (Arnium Reference vs Live Browser Audit)
     const hudOutput = document.getElementById('hudOutput');
     const hudTabs = document.querySelectorAll('.hud-tab');
 
@@ -982,13 +1013,47 @@
       });
     }
 
+    async function isArniumBrowser() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('live') === '1') return false;
+      if (params.get('arnium') === '1') return true;
+
+      const ua = navigator.userAgent || '';
+      const brands = (navigator.userAgentData && navigator.userAgentData.brands)
+        ? navigator.userAgentData.brands.map(b => b.brand).join(' ')
+        : '';
+
+      if (/arnium/i.test(ua) || /arnium/i.test(brands)) {
+        return true;
+      }
+
+      if (navigator.requestMediaKeySystemAccess && window.MediaSource) {
+        const dvSupported = MediaSource.isTypeSupported('video/mp4; codecs="dvhe.05.06"') ||
+                            MediaSource.isTypeSupported('video/mp4; codecs="dvhe.08.06"');
+        const eac3Supported = MediaSource.isTypeSupported('audio/mp4; codecs="ec-3"');
+
+        if (dvSupported && eac3Supported) {
+          try {
+            await navigator.requestMediaKeySystemAccess('com.microsoft.playready.recommendation.3000', [{
+              initDataTypes: ['cenc'],
+              videoCapabilities: [{ contentType: 'video/mp4; codecs="hev1.2.4.L150.B0"', robustness: '3000' }]
+            }]);
+            return true;
+          } catch (e) {
+            return false;
+          }
+        }
+      }
+
+      return false;
+    }
+
     async function runLiveBrowserAudit() {
       hudOutput.innerHTML = '<div class="hud-line c-cyan">&gt; PROBING YOUR CURRENT BROWSER VIA EME &amp; MEDIA SOURCE APIs...</div>';
       const results = [
         { cls: 'c-cyan', text: '> LIVE CLIENT CAPABILITY REPORT (' + navigator.platform + '):' }
       ];
 
-      // 1. Check PlayReady SL3000
       if (navigator.requestMediaKeySystemAccess) {
         try {
           await navigator.requestMediaKeySystemAccess('com.microsoft.playready.recommendation.3000', [{
@@ -1003,7 +1068,6 @@
         results.push({ cls: 'c-red', text: '[UNAVAILABLE] Encrypted Media Extensions (EME) API not exposed' });
       }
 
-      // 2. Check Dolby Vision
       const dv5 = window.MediaSource && MediaSource.isTypeSupported('video/mp4; codecs="dvhe.05.06"');
       const dv8 = window.MediaSource && MediaSource.isTypeSupported('video/mp4; codecs="dvhe.08.06"');
       results.push({
@@ -1013,7 +1077,6 @@
           : '[UNAVAILABLE] Dolby Vision (dvhe.05.06 / dvhe.08.06) -> Not exposed to MSE'
       });
 
-      // 3. Check Dolby Atmos / E-AC-3
       const eac3 = window.MediaSource && MediaSource.isTypeSupported('audio/mp4; codecs="ec-3"');
       results.push({
         cls: eac3 ? 'c-green' : 'c-amber',
@@ -1022,7 +1085,6 @@
           : '[UNAVAILABLE] Dolby E-AC-3 (ec-3) -> Rejected by current browser'
       });
 
-      // 4. Check AV1 & HDR Display
       const av1 = window.MediaSource && MediaSource.isTypeSupported('video/mp4; codecs="av01.0.08M.08"');
       const hdrScreen = window.matchMedia && window.matchMedia('(dynamic-range: high)').matches;
       results.push({
@@ -1033,22 +1095,29 @@
       renderLines(results);
     }
 
+    function setActiveMode(mode) {
+      hudTabs.forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+      if (mode === 'live') {
+        runLiveBrowserAudit();
+      } else {
+        renderLines(referenceLines);
+      }
+    }
+
+    (async function initAuditTerminal() {
+      const detectedArnium = await isArniumBrowser();
+      setActiveMode(detectedArnium ? 'arnium' : 'live');
+    })();
+
     hudTabs.forEach(tab => {
       tab.addEventListener('click', () => {
-        hudTabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        if (tab.dataset.mode === 'live') {
-          runLiveBrowserAudit();
-        } else {
-          renderLines(referenceLines);
-        }
+        setActiveMode(tab.dataset.mode);
       });
     });
 
     document.getElementById('heroProbeBtn').addEventListener('click', () => {
       document.getElementById('audit').scrollIntoView({ behavior: 'smooth' });
-      hudTabs.forEach(t => t.classList.toggle('active', t.dataset.mode === 'live'));
-      runLiveBrowserAudit();
+      setActiveMode('live');
     });
 
     // Interactive Architecture Pipeline Explorer
