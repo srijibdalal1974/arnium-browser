@@ -4,23 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Arnium Browser v2 is a custom Chromium browser focused on hardware PlayReady SL3000, Dolby Vision Profiles 5 & 8, and Dolby Atmos media decoding on Windows.">
+  <meta property="og:title" content="Arnium Browser v2 | Hardware-Accelerated Media Engine">
+  <meta property="og:description" content="Custom Chromium fork with PlayReady SL3000 TEE enclaves, native Dolby Vision Profiles 5 & 8 decoding, and Dolby Atmos E-AC-3 passthrough.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://srijibdalal1974.github.io/arnium-browser/">
   <title>Arnium Browser v2 | Hardware-Accelerated Media Engine</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #06080e;
-      --surface: rgba(13, 17, 28, 0.72);
-      --border: rgba(0, 229, 255, 0.18);
+      --bg: #05070d;
+      --bg-elevated: #0b0f1c;
+      --surface: rgba(14, 19, 32, 0.68);
+      --surface-hover: rgba(20, 27, 46, 0.85);
+      --border: rgba(0, 229, 255, 0.22);
       --border-subtle: rgba(255, 255, 255, 0.08);
       --accent-cyan: #00e5ff;
-      --accent-purple: #9d4edd;
+      --accent-blue: #3b82f6;
+      --accent-purple: #a855f7;
       --accent-green: #00ff88;
-      --text: #f0f6fc;
-      --text-dim: #8b9bb4;
+      --accent-amber: #fbbf24;
+      --accent-red: #f87171;
+      --text: #f1f5f9;
+      --text-dim: #94a3b8;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       background-color: var(--bg);
       color: var(--text);
@@ -28,188 +48,666 @@
       overflow-x: hidden;
       line-height: 1.6;
     }
+
+    /* Scroll Progress Bar */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-green));
+      z-index: 100;
+      box-shadow: 0 0 12px var(--accent-cyan);
+      transition: width 0.1s ease-out;
+    }
+
+    /* Ambient Background */
     .bg-canvas {
       position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
+      inset: 0;
       pointer-events: none;
       z-index: 0;
       overflow: hidden;
     }
+
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 229, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.035) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse 75% 60% at 50% 25%, #000 35%, transparent 100%);
+    }
+
     .hero-watermark {
       position: absolute;
-      top: -5%;
+      top: -6%;
       left: 50%;
       transform: translateX(-50%);
       width: 780px;
       height: 780px;
       background: url('logo.png') no-repeat center center;
       background-size: contain;
-      opacity: 0.16;
-      filter: blur(14px) drop-shadow(0 0 80px rgba(0, 229, 255, 0.45));
+      opacity: 0.14;
+      filter: blur(16px) drop-shadow(0 0 80px rgba(0, 229, 255, 0.45));
       animation: floatPulse 9s ease-in-out infinite alternate;
     }
-    @keyframes floatPulse {
-      0% { transform: translateX(-50%) translateY(0) scale(1); filter: blur(14px) drop-shadow(0 0 50px rgba(0, 229, 255, 0.3)); }
-      100% { transform: translateX(-50%) translateY(-25px) scale(1.06); filter: blur(10px) drop-shadow(0 0 90px rgba(157, 78, 221, 0.5)); }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(110px);
+      opacity: 0.25;
+      animation: drift 16s ease-in-out infinite alternate;
     }
+
+    .orb-1 {
+      width: 420px;
+      height: 420px;
+      background: var(--accent-cyan);
+      top: 10%;
+      left: -8%;
+    }
+
+    .orb-2 {
+      width: 460px;
+      height: 460px;
+      background: var(--accent-purple);
+      top: 42%;
+      right: -10%;
+      animation-delay: -6s;
+    }
+
+    @keyframes floatPulse {
+      0% { transform: translateX(-50%) translateY(0) scale(1); }
+      100% { transform: translateX(-50%) translateY(-24px) scale(1.06); }
+    }
+
+    @keyframes drift {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(35px, -30px) scale(1.12); }
+    }
+
+    /* Sticky Glass Navigation */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(16px);
+      background: rgba(5, 7, 13, 0.72);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
     nav {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 1.8rem 2rem;
+      padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: relative;
-      z-index: 10;
+      gap: 1rem;
     }
+
     .nav-brand {
       display: flex;
       align-items: center;
-      gap: 0.9rem;
+      gap: 0.85rem;
       text-decoration: none;
       color: #fff;
     }
+
     .brand-icon {
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       border-radius: 10px;
       background: url('logo.png') no-repeat center center;
       background-size: cover;
-      box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.45);
     }
-    .nav-title { font-size: 1.35rem; font-weight: 700; }
-    .nav-title span { color: var(--accent-cyan); }
+
+    .nav-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-title span {
+      color: var(--accent-cyan);
+    }
+
     .nav-tag {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      padding: 0.2rem 0.55rem;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.6rem;
       border-radius: 99px;
       background: rgba(0, 229, 255, 0.1);
       border: 1px solid var(--accent-cyan);
       color: var(--accent-cyan);
     }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .nav-links a.nav-item {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a.nav-item:hover {
+      color: var(--accent-cyan);
+    }
+
+    /* Hero Section */
     .hero {
-      max-width: 960px;
+      max-width: 980px;
       margin: 4.5rem auto 2.5rem;
       text-align: center;
       padding: 0 1.5rem;
       position: relative;
       z-index: 10;
     }
+
     .hero-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.4rem 1rem;
-      background: rgba(13, 17, 28, 0.85);
+      gap: 0.55rem;
+      padding: 0.42rem 1.05rem;
+      background: rgba(13, 17, 28, 0.88);
       border: 1px solid var(--border);
       border-radius: 999px;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       color: var(--accent-cyan);
-      margin-bottom: 2rem;
+      margin-bottom: 1.8rem;
       backdrop-filter: blur(12px);
+      box-shadow: 0 0 25px rgba(0, 229, 255, 0.12);
     }
-    .hero-badge span {
-      width: 7px; height: 7px; border-radius: 50%; background: var(--accent-green);
-      box-shadow: 0 0 8px var(--accent-green);
+
+    .hero-badge .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green);
+      animation: pulseDot 1.8s infinite;
     }
+
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.45); opacity: 0.55; }
+    }
+
     .hero h1 {
-      font-size: 3.8rem;
-      line-height: 1.1;
+      font-size: clamp(2.5rem, 6vw, 4.1rem);
+      line-height: 1.08;
       font-weight: 700;
       letter-spacing: -2px;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.4rem;
     }
+
     .glow-text {
-      background: linear-gradient(135deg, #ffffff 30%, var(--accent-cyan) 75%, var(--accent-purple) 100%);
+      background: linear-gradient(135deg, #ffffff 22%, var(--accent-cyan) 68%, var(--accent-purple) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
     .hero p {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       color: var(--text-dim);
-      max-width: 720px;
-      margin: 0 auto 2.5rem;
+      max-width: 730px;
+      margin: 0 auto 2.4rem;
     }
+
     .hero-buttons {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 1.2rem;
+      gap: 1rem;
       flex-wrap: wrap;
     }
+
     .btn {
-      padding: 0.95rem 2rem;
-      font-size: 1rem;
+      padding: 0.9rem 1.8rem;
+      font-size: 0.96rem;
       font-weight: 600;
       border-radius: 12px;
       text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
       transition: all 0.25s ease;
       display: inline-flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.55rem;
     }
+
+    .btn-sm {
+      padding: 0.55rem 1.1rem;
+      font-size: 0.85rem;
+      border-radius: 9px;
+    }
+
     .btn-download {
-      background: var(--accent-cyan);
-      color: #06080e;
-      box-shadow: 0 0 30px rgba(0, 229, 255, 0.4);
+      background: linear-gradient(135deg, var(--accent-cyan), #38bdf8);
+      color: #05070d;
+      box-shadow: 0 0 28px rgba(0, 229, 255, 0.38);
     }
+
     .btn-download:hover {
       transform: translateY(-2px);
-      box-shadow: 0 0 45px rgba(0, 229, 255, 0.7);
+      box-shadow: 0 0 42px rgba(0, 229, 255, 0.68);
     }
+
     .btn-outline {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border-subtle);
       color: #fff;
       backdrop-filter: blur(10px);
     }
+
     .btn-outline:hover {
       background: rgba(255, 255, 255, 0.1);
+      border-color: var(--border);
+      transform: translateY(-2px);
     }
-    .hud-box {
-      max-width: 860px;
+
+    /* Interactive Terminal HUD */
+    .hud-wrapper {
+      max-width: 900px;
       margin: 3.5rem auto;
-      background: rgba(10, 14, 22, 0.9);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.75rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.88rem;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(0, 229, 255, 0.15);
+      padding: 0 1.5rem;
       position: relative;
       z-index: 10;
     }
-    .hud-line { margin-bottom: 0.45rem; }
+
+    .hud-box {
+      background: rgba(9, 13, 22, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86rem;
+      box-shadow: 0 28px 65px rgba(0, 0, 0, 0.75), 0 0 40px rgba(0, 229, 255, 0.14);
+    }
+
+    .hud-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding: 0.85rem 1.25rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .hud-dots {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .hud-dots span {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+
+    .dot-r { background: #ff5f56; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #27c93f; }
+
+    .hud-label {
+      margin-left: 0.6rem;
+      color: var(--text-dim);
+      font-size: 0.78rem;
+    }
+
+    .hud-controls {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .hud-tab {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 7px;
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .hud-tab.active, .hud-tab:hover {
+      background: rgba(0, 229, 255, 0.14);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .hud-body {
+      padding: 1.6rem;
+      min-height: 220px;
+    }
+
+    .hud-line {
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      animation: fadeSlide 0.3s ease forwards;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .c-green { color: var(--accent-green); }
     .c-cyan { color: var(--accent-cyan); }
+    .c-amber { color: var(--accent-amber); }
+    .c-red { color: var(--accent-red); }
     .c-dim { color: var(--text-dim); }
-    .features-section {
+
+    /* Section Headers */
+    .section {
       max-width: 1200px;
-      margin: 6rem auto 3rem;
+      margin: 5.5rem auto;
       padding: 0 2rem;
       position: relative;
       z-index: 10;
     }
+
+    .section-head {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 3rem;
+    }
+
+    .section-kicker {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent-cyan);
+      margin-bottom: 0.6rem;
+      display: block;
+    }
+
+    .section-head h2 {
+      font-size: clamp(1.9rem, 3.8vw, 2.7rem);
+      letter-spacing: -1px;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-head p {
+      color: var(--text-dim);
+      font-size: 1.05rem;
+    }
+
+    /* Interactive Pipeline Explorer */
+    .pipeline-tabs {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .pipe-btn {
+      padding: 0.65rem 1.25rem;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .pipe-btn.active, .pipe-btn:hover {
+      border-color: var(--accent-cyan);
+      color: #fff;
+      background: rgba(0, 229, 255, 0.12);
+      box-shadow: 0 0 22px rgba(0, 229, 255, 0.16);
+    }
+
+    .pipeline-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.2rem;
+      backdrop-filter: blur(16px);
+    }
+
+    .flow-track {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .flow-node {
+      background: rgba(6, 9, 18, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.2rem;
+      position: relative;
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .flow-node:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-cyan);
+    }
+
+    .flow-step {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent-cyan);
+      margin-bottom: 0.35rem;
+      display: block;
+    }
+
+    .flow-node h4 {
+      font-size: 1.05rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .flow-node p {
+      font-size: 0.86rem;
+      color: var(--text-dim);
+    }
+
+    .pipeline-summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding-top: 1.4rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .pipeline-summary p {
+      color: var(--text-dim);
+      max-width: 760px;
+      font-size: 0.96rem;
+    }
+
+    .shaka-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 999px;
+      background: rgba(0, 255, 136, 0.1);
+      border: 1px solid rgba(0, 255, 136, 0.35);
+      color: var(--accent-green);
+    }
+
+    /* Spotlight Glass Cards */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 1.8rem;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.6rem;
     }
+
     .glass-card {
+      position: relative;
       background: var(--surface);
       border: 1px solid var(--border-subtle);
       border-radius: 18px;
-      padding: 2.2rem;
+      padding: 2.1rem;
       backdrop-filter: blur(14px);
-      transition: all 0.3s ease;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+      overflow: hidden;
     }
+
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        420px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(0, 229, 255, 0.14),
+        transparent 65%
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .glass-card:hover::before {
+      opacity: 1;
+    }
+
     .glass-card:hover {
       border-color: var(--border);
       transform: translateY(-5px);
     }
-    .glass-card h3 { font-size: 1.3rem; margin-bottom: 0.8rem; color: #fff; }
-    .glass-card p { color: var(--text-dim); font-size: 0.98rem; }
+
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid var(--border);
+      color: var(--accent-cyan);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      margin-bottom: 1.1rem;
+    }
+
+    .glass-card h3 {
+      font-size: 1.28rem;
+      margin-bottom: 0.7rem;
+      color: #fff;
+    }
+
+    .glass-card p {
+      color: var(--text-dim);
+      font-size: 0.96rem;
+    }
+
+    /* Interactive Compatibility Matrix */
+    .matrix-controls {
+      display: flex;
+      justify-content: center;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      overflow-x: auto;
+      backdrop-filter: blur(14px);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      min-width: 680px;
+    }
+
+    th, td {
+      padding: 1.1rem 1.35rem;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.94rem;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--accent-cyan);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: rgba(0, 255, 136, 0.12);
+      color: var(--accent-green);
+      border: 1px solid rgba(0, 255, 136, 0.25);
+    }
+
+    .status-ott {
+      background: rgba(0, 229, 255, 0.12);
+      color: var(--accent-cyan);
+      border-color: rgba(0, 229, 255, 0.28);
+    }
+
+    /* Build Snippet Box */
+    .build-box {
+      background: rgba(9, 13, 22, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+    }
+
+    .build-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86rem;
+      color: #e2e8f0;
+      line-height: 1.7;
+    }
+
+    /* Footer */
     footer {
       border-top: 1px solid var(--border-subtle);
       padding: 3rem 2rem;
@@ -219,57 +717,443 @@
       position: relative;
       z-index: 10;
     }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .footer-links a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 720px) {
+      .nav-links .nav-item {
+        display: none;
+      }
+      .hero {
+        margin-top: 3rem;
+      }
+    }
   </style>
 </head>
 <body>
+  <div class="scroll-progress" id="scrollProgress"></div>
+
   <div class="bg-canvas">
+    <div class="bg-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
     <div class="hero-watermark"></div>
   </div>
-  <nav>
-    <a href="#" class="nav-brand">
-      <div class="brand-icon"></div>
-      <div class="nav-title">ARNIUM <span>v2</span></div>
-      <div class="nav-tag">PLAYREADY SL3000</div>
-    </a>
-    <a href="https://github.com/srijibdalal1974/arnium-browser" class="btn btn-outline" target="_blank">GitHub Repo</a>
-  </nav>
-  <section class="hero">
-    <div class="hero-badge">
-      <span></span> Hardware Media Engine Active
-    </div>
-    <h1>The Custom Chromium Engine for <span class="glow-text">Cinematic Streaming</span></h1>
-    <p>Hardware PlayReady SL3000 TEE enclaves, native Dolby Vision Profiles 5 &amp; 8 decoding, and zero-copy DirectComposition swapchains.</p>
-    <div class="hero-buttons">
-      <a href="https://github.com/srijibdalal1974/arnium-browser/releases/latest" class="btn btn-download" target="_blank">Download v2.0 Release</a>
-      <a href="https://github.com/srijibdalal1974/arnium-browser" class="btn btn-outline" target="_blank">View Source</a>
-    </div>
-  </section>
-  <div class="hud-box">
-    <div class="hud-line c-cyan">&gt; RUNNING EME &amp; HARDWARE TRANSFORM AUDIT...</div>
-    <div class="hud-line c-green">[GRANTED] PlayReady Hardware Secure (HW_SECURE_ALL) -&gt; Active</div>
-    <div class="hud-line c-green">[GRANTED] Robustness Level 3000 (SL3000 / TEE) -&gt; 4K Stream Cap Unlocked</div>
-    <div class="hud-line c-green">[PASS] Dolby Vision Profiles 5 &amp; 8 (dvhe.05.06 / dvhe.08.06) -&gt; Hardware MFT Smooth</div>
-    <div class="hud-line c-green">[PASS] Dolby Audio (E-AC-3 / Atmos) -&gt; Active 3000 Robustness Routing</div>
-    <div class="hud-line c-dim">&gt; HDCP Handshake: Levels 1.0, 2.0, 2.2, 2.3 verified usable across eDP pipeline</div>
-  </div>
-  <section class="features-section">
-    <div class="grid">
-      <div class="glass-card">
-        <h3>PlayReady SL3000 TEE Enclave</h3>
-        <p>Decryption occurs strictly inside hardware-isolated GPU memory (PAVP/TEE). Netflix, Prime Video, and Apple TV recognize native SL3000 security, unlocking full 4K streams.</p>
+
+  <header>
+    <nav>
+      <a href="#" class="nav-brand">
+        <div class="brand-icon"></div>
+        <div class="nav-title">ARNIUM <span>v2</span></div>
+        <div class="nav-tag">PLAYREADY SL3000</div>
+      </a>
+      <div class="nav-links">
+        <a href="#audit" class="nav-item">Live Audit</a>
+        <a href="#pipeline" class="nav-item">Pipeline</a>
+        <a href="#matrix" class="nav-item">Compatibility</a>
+        <a href="https://github.com/srijibdalal1974/arnium-browser" class="btn btn-outline btn-sm" target="_blank" rel="noopener">GitHub Repo</a>
       </div>
-      <div class="glass-card">
-        <h3>Dolby Vision Profiles 5 &amp; 8</h3>
-        <p>Directly connects to Windows MFT decoders, handling dynamic metadata and BT.2020 PQ tonemapping with zero stutter.</p>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-badge">
+        <span class="pulse-dot"></span> Hardware Media Engine Active &bull; Tested in Shaka Player
       </div>
-      <div class="glass-card">
-        <h3>Dolby Atmos (E-AC-3) Passthrough</h3>
-        <p>Integrated spatial sound architecture streaming discrete multi-channel E-AC-3 bitstreams without software downmixing.</p>
+      <h1>The Custom Chromium Engine for <span class="glow-text">Cinematic Streaming</span></h1>
+      <p>Hardware PlayReady SL3000 TEE enclaves, native Dolby Vision Profiles 5 &amp; 8 decoding, and zero-copy DirectComposition swapchains—without enterprise telemetry or bloat.</p>
+      <div class="hero-buttons">
+        <a href="https://github.com/srijibdalal1974/arnium-browser/releases/latest" class="btn btn-download" target="_blank" rel="noopener">Download v2.0 Release</a>
+        <a href="https://github.com/srijibdalal1974/arnium-browser" class="btn btn-outline" target="_blank" rel="noopener">View Source Code</a>
+        <button type="button" class="btn btn-outline" id="heroProbeBtn">Test Your Browser Now</button>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- Interactive Media Diagnostic Terminal -->
+    <section class="hud-wrapper" id="audit">
+      <div class="hud-box">
+        <div class="hud-topbar">
+          <div class="hud-dots">
+            <span class="dot-r"></span>
+            <span class="dot-y"></span>
+            <span class="dot-g"></span>
+            <span class="hud-label">arnium-media-diagnostics.exe</span>
+          </div>
+          <div class="hud-controls">
+            <button type="button" class="hud-tab active" data-mode="arnium">Arnium Reference Target</button>
+            <button type="button" class="hud-tab" data-mode="live">Run Live Browser Audit</button>
+          </div>
+        </div>
+        <div class="hud-body" id="hudOutput">
+          <div class="hud-line c-cyan">&gt; RUNNING EME &amp; HARDWARE TRANSFORM AUDIT (TESTED IN SHAKA PLAYER)...</div>
+          <div class="hud-line c-green">[GRANTED] PlayReady Hardware Secure (HW_SECURE_ALL) -&gt; Active</div>
+          <div class="hud-line c-green">[GRANTED] Robustness Level 3000 (SL3000 / TEE) -&gt; 4K Stream Cap Unlocked</div>
+          <div class="hud-line c-green">[PASS] Dolby Vision Profiles 5 &amp; 8 (dvhe.05.06 / dvhe.08.06) -&gt; Hardware MFT Smooth</div>
+          <div class="hud-line c-green">[PASS] Dolby Audio (E-AC-3 / Atmos) -&gt; Active 3000 Robustness Routing</div>
+          <div class="hud-line c-dim">&gt; HDCP Handshake: Levels 1.0, 2.0, 2.2, 2.3 verified usable across eDP pipeline</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Pipeline Explorer -->
+    <section class="section" id="pipeline">
+      <div class="section-head">
+        <span class="section-kicker">Architecture Explorer</span>
+        <h2>Native C++ Media Foundation Routing</h2>
+        <p>Select a subsystem below to inspect how Arnium routes encrypted and high-dynamic-range streams directly to Windows GPU and audio endpoints.</p>
+      </div>
+
+      <div class="pipeline-tabs" id="pipelineTabs">
+        <button type="button" class="pipe-btn active" data-pipe="sl3000">PlayReady SL3000 TEE</button>
+        <button type="button" class="pipe-btn" data-pipe="dv">Dolby Vision Profiles 5 &amp; 8</button>
+        <button type="button" class="pipe-btn" data-pipe="atmos">Dolby Atmos (E-AC-3)</button>
+        <button type="button" class="pipe-btn" data-pipe="ui">Clean Local Profile UI</button>
+      </div>
+
+      <div class="pipeline-panel" id="pipelinePanel">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- Core Feature Cards -->
+    <section class="section">
+      <div class="grid" id="cardGrid">
+        <div class="glass-card">
+          <div class="card-icon">SL3K</div>
+          <h3>PlayReady SL3000 TEE Enclave</h3>
+          <p>Decryption occurs strictly inside hardware-isolated GPU memory (PAVP/TEE). Exposes native SL3000 hardware security endpoints verified in Shaka Player.</p>
+        </div>
+        <div class="glass-card">
+          <div class="card-icon">DV5/8</div>
+          <h3>Dolby Vision Profiles 5 &amp; 8</h3>
+          <p>Directly connects to Windows Media Foundation transforms (MFT), handling dynamic RPU metadata and BT.2020 PQ tonemapping with zero stutter.</p>
+        </div>
+        <div class="glass-card">
+          <div class="card-icon">E-AC3</div>
+          <h3>Dolby Atmos Passthrough</h3>
+          <p>Integrated spatial sound architecture routing discrete multi-channel AC-3 and E-AC-3 bitstreams to Windows Spatial Sound without software downmixing.</p>
+        </div>
+        <div class="glass-card">
+          <div class="card-icon">0-NAG</div>
+          <h3>Zero Enterprise Telemetry</h3>
+          <p>Permanently removes "Managed by your organization" banners, background update pollers, metric uploaders, and forced cloud account prompts.</p>
+        </div>
+        <div class="glass-card">
+          <div class="card-icon">DCOMP</div>
+          <h3>Zero-Copy DirectComposition</h3>
+          <p>Hardware video overlays bind straight to DWM swapchains on Windows 10 and 11, lowering GPU power draw and frame presentation latency.</p>
+        </div>
+        <div class="glass-card">
+          <div class="card-icon">OPEN</div>
+          <h3>Auditable Patch &amp; GN Config</h3>
+          <p>Distributed with unified C++ diffs (<code>arnium_modifications.patch</code>), production <code>args.gn</code> flags, and an Inno Setup packaging script.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Compatibility Matrix -->
+    <section class="section" id="matrix">
+      <div class="section-head">
+        <span class="section-kicker">Playback Matrix</span>
+        <h2>Codec, DRM &amp; Streaming Support</h2>
+        <p>Filter capabilities across local media playback and adaptive web players (Tested in Shaka Player).</p>
+      </div>
+
+      <div class="matrix-controls">
+        <button type="button" class="pipe-btn active" data-filter="all">All Capabilities</button>
+        <button type="button" class="pipe-btn" data-filter="hdr">HDR &amp; Video</button>
+        <button type="button" class="pipe-btn" data-filter="audio-drm">Audio &amp; DRM</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Capability</th>
+              <th>Local &amp; Direct Streams</th>
+              <th>Web / OTT Players</th>
+              <th>Hardware &amp; OS Requirement</th>
+            </tr>
+          </thead>
+          <tbody id="matrixBody">
+            <tr data-cat="hdr">
+              <td><strong>Dolby Vision (Profiles 5 &amp; 8.1)</strong></td>
+              <td><span class="status-badge">Fully Supported (Shaka Tested)</span></td>
+              <td><span class="status-badge status-ott">Platform Dependent</span></td>
+              <td>Dolby Vision display + Windows Dolby Vision Extensions</td>
+            </tr>
+            <tr data-cat="audio-drm">
+              <td><strong>Dolby Atmos / AC-3 / E-AC-3</strong></td>
+              <td><span class="status-badge">Fully Supported (Shaka Tested)</span></td>
+              <td><span class="status-badge status-ott">Platform Dependent</span></td>
+              <td>Windows Spatial Sound / Dolby Access active</td>
+            </tr>
+            <tr data-cat="audio-drm">
+              <td><strong>PlayReady SL3000 (HW_SECURE_ALL)</strong></td>
+              <td><span class="status-badge">Fully Supported (Shaka Tested)</span></td>
+              <td><span class="status-badge status-ott">Platform Dependent</span></td>
+              <td>Intel 7th Gen+ / AMD equivalent GPU with HDCP 2.2</td>
+            </tr>
+            <tr data-cat="hdr">
+              <td><strong>AV1 &amp; HEVC (H.265 10-bit)</strong></td>
+              <td><span class="status-badge">Hardware Accelerated</span></td>
+              <td><span class="status-badge">Hardware Accelerated</span></td>
+              <td>Hardware GPU decoder + Windows HEVC Video Extensions</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Quick Build Section -->
+    <section class="section">
+      <div class="build-box">
+        <div class="build-code" id="buildCmd">git apply arnium_modifications.patch &amp;&amp; gn gen out\Release &amp;&amp; autoninja -C out\Release chrome</div>
+        <button type="button" class="btn btn-outline btn-sm" id="copyBuildBtn">Copy Build Command</button>
+      </div>
+    </section>
+  </main>
+
   <footer>
+    <div class="footer-links">
+      <a href="https://github.com/srijibdalal1974/arnium-browser" target="_blank" rel="noopener">GitHub Repository</a>
+      <a href="https://github.com/srijibdalal1974/arnium-browser/releases/latest" target="_blank" rel="noopener">Latest Releases</a>
+      <a href="https://github.com/srijibdalal1974/arnium-browser/blob/main/LICENSE" target="_blank" rel="noopener">BSD 3-Clause License</a>
+    </div>
     <p>Arnium Browser v2 &bull; Custom Chromium Architecture &bull; Maintained by srijibdalal1974</p>
   </footer>
+
+  <script>
+    // Scroll Progress Bar
+    window.addEventListener('scroll', () => {
+      const scrollTop = document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      document.getElementById('scrollProgress').style.width = progress + '%';
+    });
+
+    // Spotlight Cursor Tracking on Glass Cards
+    document.querySelectorAll('.glass-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px');
+        card.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px');
+      });
+    });
+
+    // Interactive Terminal HUD (Reference vs Live Current Browser Scan)
+    const hudOutput = document.getElementById('hudOutput');
+    const hudTabs = document.querySelectorAll('.hud-tab');
+
+    const referenceLines = [
+      { cls: 'c-cyan', text: '> RUNNING EME & HARDWARE TRANSFORM AUDIT (TESTED IN SHAKA PLAYER)...' },
+      { cls: 'c-green', text: '[GRANTED] PlayReady Hardware Secure (HW_SECURE_ALL) -> Active' },
+      { cls: 'c-green', text: '[GRANTED] Robustness Level 3000 (SL3000 / TEE) -> 4K Stream Cap Unlocked' },
+      { cls: 'c-green', text: '[PASS] Dolby Vision Profiles 5 & 8 (dvhe.05.06 / dvhe.08.06) -> Hardware MFT Smooth' },
+      { cls: 'c-green', text: '[PASS] Dolby Audio (E-AC-3 / Atmos) -> Active 3000 Robustness Routing' },
+      { cls: 'c-dim', text: '> HDCP Handshake: Levels 1.0, 2.0, 2.2, 2.3 verified usable across eDP pipeline' }
+    ];
+
+    function renderLines(lines) {
+      hudOutput.innerHTML = '';
+      lines.forEach((line, idx) => {
+        const div = document.createElement('div');
+        div.className = 'hud-line ' + line.cls;
+        div.style.animationDelay = (idx * 55) + 'ms';
+        div.textContent = line.text;
+        hudOutput.appendChild(div);
+      });
+    }
+
+    async function runLiveBrowserAudit() {
+      hudOutput.innerHTML = '<div class="hud-line c-cyan">&gt; PROBING YOUR CURRENT BROWSER VIA EME &amp; MEDIA SOURCE APIs...</div>';
+      const results = [
+        { cls: 'c-cyan', text: '> LIVE CLIENT CAPABILITY REPORT (' + navigator.platform + '):' }
+      ];
+
+      // 1. Check PlayReady SL3000
+      if (navigator.requestMediaKeySystemAccess) {
+        try {
+          await navigator.requestMediaKeySystemAccess('com.microsoft.playready.recommendation.3000', [{
+            initDataTypes: ['cenc'],
+            videoCapabilities: [{ contentType: 'video/mp4; codecs="hev1.2.4.L150.B0"', robustness: '3000' }]
+          }]);
+          results.push({ cls: 'c-green', text: '[SUPPORTED] PlayReady SL3000 Hardware DRM -> Available in this browser!' });
+        } catch (e) {
+          results.push({ cls: 'c-amber', text: '[UNAVAILABLE] PlayReady SL3000 -> Blocked or unsupported in current browser' });
+        }
+      } else {
+        results.push({ cls: 'c-red', text: '[UNAVAILABLE] Encrypted Media Extensions (EME) API not exposed' });
+      }
+
+      // 2. Check Dolby Vision
+      const dv5 = window.MediaSource && MediaSource.isTypeSupported('video/mp4; codecs="dvhe.05.06"');
+      const dv8 = window.MediaSource && MediaSource.isTypeSupported('video/mp4; codecs="dvhe.08.06"');
+      results.push({
+        cls: (dv5 || dv8) ? 'c-green' : 'c-amber',
+        text: (dv5 || dv8)
+          ? '[SUPPORTED] Dolby Vision (' + [dv5 ? 'Profile 5' : '', dv8 ? 'Profile 8' : ''].filter(Boolean).join(' & ') + ') -> Decoder registered'
+          : '[UNAVAILABLE] Dolby Vision (dvhe.05.06 / dvhe.08.06) -> Not exposed to MSE'
+      });
+
+      // 3. Check Dolby Atmos / E-AC-3
+      const eac3 = window.MediaSource && MediaSource.isTypeSupported('audio/mp4; codecs="ec-3"');
+      results.push({
+        cls: eac3 ? 'c-green' : 'c-amber',
+        text: eac3
+          ? '[SUPPORTED] Dolby Digital Plus / Atmos (ec-3) -> Bitstream container accepted'
+          : '[UNAVAILABLE] Dolby E-AC-3 (ec-3) -> Rejected by current browser'
+      });
+
+      // 4. Check AV1 & HDR Display
+      const av1 = window.MediaSource && MediaSource.isTypeSupported('video/mp4; codecs="av01.0.08M.08"');
+      const hdrScreen = window.matchMedia && window.matchMedia('(dynamic-range: high)').matches;
+      results.push({
+        cls: 'c-dim',
+        text: '> AV1 MSE: ' + (av1 ? 'Yes' : 'No') + ' | Display HDR Dynamic Range: ' + (hdrScreen ? 'High (HDR)' : 'Standard (SDR)')
+      });
+
+      renderLines(results);
+    }
+
+    hudTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        hudTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        if (tab.dataset.mode === 'live') {
+          runLiveBrowserAudit();
+        } else {
+          renderLines(referenceLines);
+        }
+      });
+    });
+
+    document.getElementById('heroProbeBtn').addEventListener('click', () => {
+      document.getElementById('audit').scrollIntoView({ behavior: 'smooth' });
+      hudTabs.forEach(t => t.classList.toggle('active', t.dataset.mode === 'live'));
+      runLiveBrowserAudit();
+    });
+
+    // Interactive Architecture Pipeline Explorer
+    const pipelines = {
+      sl3000: {
+        steps: [
+          { step: 'STAGE 01', title: 'EME Key Request', desc: 'Shaka Player or OTT app requests com.microsoft.playready.recommendation.3000.' },
+          { step: 'STAGE 02', title: 'MediaFoundation CDM', desc: 'Arnium bridges Chromium EME directly to Windows hardware PlayReady CDM.' },
+          { step: 'STAGE 03', title: 'GPU PAVP / TEE', desc: 'Encrypted samples decrypt inside isolated GPU memory without CPU readback.' },
+          { step: 'STAGE 04', title: 'HDCP 2.2+ Output', desc: 'Protected frames present via DirectComposition swapchain to compliant displays.' }
+        ],
+        summary: 'Retains hardware DRM robustness level 3000 endpoints required for 4K protected playback pipelines.',
+        badge: 'Verified in Shaka Player'
+      },
+      dv: {
+        steps: [
+          { step: 'STAGE 01', title: 'MP4 / DASH Demux', desc: 'Parses dvhe / dvh1 NAL units with embedded RPU dynamic metadata.' },
+          { step: 'STAGE 02', title: 'Windows DV MFT', desc: 'Routes stream straight to Microsoft Store Dolby Vision Video Extensions MFT.' },
+          { step: 'STAGE 03', title: 'BT.2020 PQ Mapping', desc: 'Preserves 10-bit color primaries and per-scene luminance curves.' },
+          { step: 'STAGE 04', title: 'Zero-Copy Overlay', desc: 'Composites HDR video plane directly through Windows DWM.' }
+        ],
+        summary: 'Supports both Profile 5 (single-layer IPTPQc2) and Profile 8.1 (HDR10 cross-compatible) streams.',
+        badge: 'Tested in Shaka Player'
+      },
+      atmos: {
+        steps: [
+          { step: 'STAGE 01', title: 'E-AC-3 / AC-3 Track', desc: 'MSE accepts Dolby Digital Plus with Joint Object Coding (JOC) metadata.' },
+          { step: 'STAGE 02', title: 'DolbyDecMFT Hook', desc: 'Bypasses stereo-only software fallbacks when host spatial endpoints exist.' },
+          { step: 'STAGE 03', title: 'Spatial Audio Engine', desc: 'Hands multi-channel object beds to Windows Spatial Sound / Dolby Access.' },
+          { step: 'STAGE 04', title: 'Discrete Output', desc: 'Delivers surround or binaural head-tracked audio to AVR or headphones.' }
+        ],
+        summary: 'Eliminates artificial browser codec blocks on multi-channel AC-3 and E-AC-3 audio streams.',
+        badge: 'Tested in Shaka Player'
+      },
+      ui: {
+        steps: [
+          { step: 'STAGE 01', title: 'Policy Nag Removal', desc: 'Strips "Managed by your organization" and enterprise enrollment banners.' },
+          { step: 'STAGE 02', title: 'Local-First Profile', desc: 'Removes forced Google sign-in prompts and avatar sync pop-ups.' },
+          { step: 'STAGE 03', title: 'Toolbar Gear Action', desc: 'Adds a 1-click native settings button directly on the main browser toolbar.' },
+          { step: 'STAGE 04', title: 'Lean Background Tasks', desc: 'Disables background metric uploaders and auto-update service pollers.' }
+        ],
+        summary: 'Delivers a clean, low-RAM Windows desktop browsing experience built on upstream Chromium.',
+        badge: 'BSD 3-Clause Open Source'
+      }
+    };
+
+    const pipelinePanel = document.getElementById('pipelinePanel');
+    const pipeBtns = document.querySelectorAll('.pipe-btn[data-pipe]');
+
+    function renderPipeline(key) {
+      const data = pipelines[key];
+      pipelinePanel.innerHTML = `
+        <div class="flow-track">
+          ${data.steps.map(s => `
+            <div class="flow-node">
+              <span class="flow-step">${s.step}</span>
+              <h4>${s.title}</h4>
+              <p>${s.desc}</p>
+            </div>
+          `).join('')}
+        </div>
+        <div class="pipeline-summary">
+          <p>${data.summary}</p>
+          <span class="shaka-pill">${data.badge}</span>
+        </div>
+      `;
+    }
+
+    renderPipeline('sl3000');
+
+    pipeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        pipeBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderPipeline(btn.dataset.pipe);
+      });
+    });
+
+    // Compatibility Table Filter
+    const filterBtns = document.querySelectorAll('.pipe-btn[data-filter]');
+    const matrixRows = document.querySelectorAll('#matrixBody tr');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        matrixRows.forEach(row => {
+          row.style.display = (filter === 'all' || row.dataset.cat === filter) ? '' : 'none';
+        });
+      });
+    });
+
+    // One-Click Copy Build Command
+    const copyBtn = document.getElementById('copyBuildBtn');
+    copyBtn.addEventListener('click', async () => {
+      const cmd = document.getElementById('buildCmd').textContent;
+      try {
+        await navigator.clipboard.writeText(cmd);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => { copyBtn.textContent = 'Copy Build Command'; }, 2000);
+      } catch (e) {
+        copyBtn.textContent = 'Select & Ctrl+C';
+      }
+    });
+  </script>
 </body>
 </html>
