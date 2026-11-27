@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Arnium Browser v2 is a custom Chromium browser focused on hardware PlayReady SL3000, Dolby Vision Profiles 5 & 8, and Dolby Atmos media decoding on Windows.">
+  <link rel="canonical" href="https://srijibdalal1974.github.io/arnium-browser/">
   <meta property="og:title" content="Arnium Browser v2 | Hardware-Accelerated Media Engine">
   <meta property="og:description" content="Custom Chromium fork with PlayReady SL3000 TEE enclaves, native Dolby Vision Profiles 5 & 8 decoding, and Dolby Atmos E-AC-3 passthrough.">
   <meta property="og:type" content="website">
@@ -13,6 +14,23 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Arnium Browser v2",
+    "operatingSystem": "Windows 10, Windows 11",
+    "applicationCategory": "BrowserApplication",
+    "description": "Custom Chromium browser focused on hardware PlayReady SL3000, Dolby Vision Profiles 5 & 8, and Dolby Atmos media decoding on Windows.",
+    "url": "https://srijibdalal1974.github.io/arnium-browser/",
+    "downloadUrl": "https://github.com/srijibdalal1974/arnium-browser/releases/latest",
+    "license": "https://github.com/srijibdalal1974/arnium-browser/blob/main/LICENSE",
+    "author": {
+      "@type": "Person",
+      "name": "srijibdalal1974"
+    }
+  }
+  </script>
   <style>
     :root {
       --bg: #05070d;
@@ -832,7 +850,38 @@
         <button type="button" class="pipe-btn" data-pipe="ui">Clean Local Profile UI</button>
       </div>
 
-      <div class="pipeline-panel" id="pipelinePanel"></div>
+      <!-- Static initial content ensures crawlers and non-JS views immediately see the pipeline -->
+      <div class="pipeline-panel" id="pipelinePanel">
+        <div class="flow-track">
+          <div class="flow-node">
+            <span class="flow-step">STAGE 01</span>
+            <h4>EME Key Request</h4>
+            <p>Shaka Player or OTT app requests com.microsoft.playready.recommendation.3000.</p>
+          </div>
+          <div class="flow-node">
+            <span class="flow-step">STAGE 02</span>
+            <h4>MediaFoundation CDM</h4>
+            <p>Arnium bridges Chromium EME directly to Windows hardware PlayReady CDM.</p>
+          </div>
+          <div class="flow-node">
+            <span class="flow-step">STAGE 03</span>
+            <h4>GPU PAVP / TEE</h4>
+            <p>Encrypted samples decrypt inside isolated GPU memory without CPU readback.</p>
+          </div>
+          <div class="flow-node">
+            <span class="flow-step">STAGE 04</span>
+            <h4>HDCP 2.2+ Output</h4>
+            <p>Protected frames present via DirectComposition swapchain to compliant displays.</p>
+          </div>
+        </div>
+        <div class="pipeline-summary">
+          <p>Retains hardware DRM robustness level 3000 endpoints required for 4K protected playback pipelines, alongside Dolby Vision Profiles 5 &amp; 8 MFT decoding, Dolby Atmos (E-AC-3) routing, and a clean unmanaged local profile UI.</p>
+          <span class="shaka-pill">Verified in Shaka Player</span>
+        </div>
+        <noscript>
+          <p class="c-dim" style="margin-top: 1rem;">Subsystems supported in Arnium Browser v2: PlayReady SL3000 TEE, Dolby Vision Profiles 5 &amp; 8, Dolby Atmos (E-AC-3), and Clean Local Profile UI.</p>
+        </noscript>
+      </div>
     </section>
 
     <section class="section">
@@ -1185,8 +1234,6 @@
         </div>
       `;
     }
-
-    renderPipeline('sl3000');
 
     pipeBtns.forEach(btn => {
       btn.addEventListener('click', () => {
